@@ -3,9 +3,9 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Debug MainFrame",
+            "name": "Program",
             "request": "launch",
-            "mainClass": "ludo.mentis.aciem.MainFrame",
+            "mainClass": "ludo.mentis.aciem.Program",
             "projectName": "batch-trigger-tool"
         }
     ]

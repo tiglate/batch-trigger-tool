@@ -4,10 +4,7 @@ import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 public class MainFrame extends JFrame {
@@ -17,12 +14,13 @@ public class MainFrame extends JFrame {
     private JLabel statusLabel;
     private JDateChooser datePicker;
     private JTextField txtDir;
+    private CommandExecutor commandExecutor;
 
     public MainFrame() {
-        // --- FORÇAR LOCALE US PARA DATA E INTERFACE ---
+        // --- FORCE US LOCALE FOR DATE AND INTERFACE ---
         Locale.setDefault(Locale.US);
 
-        setTitle("Batch Executive Management System");
+        setTitle("Batch Processing Utility");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(950, 650);
         setLocationRelativeTo(null);
@@ -31,20 +29,23 @@ public class MainFrame extends JFrame {
         add(createHeaderPanel(), BorderLayout.NORTH);
         add(createCenterPanel(), BorderLayout.CENTER);
         add(createFooterPanel(), BorderLayout.SOUTH);
+        
+        // Initialize the command executor after UI components are created
+        commandExecutor = new CommandExecutor(datePicker, txtDir, console, progressBar, statusLabel);
     }
 
     private JPanel createHeaderPanel() {
-        // --- 1. CABEÇALHO (Estilo Win Antigo / Banner) ---
+        // --- 1. HEADER (Old Windows Style / Banner) ---
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(Color.WHITE);
         headerPanel.setPreferredSize(new Dimension(0, 70));
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, Color.GRAY));
 
-        // Painel interno para agrupar ícone e texto com espaçamento
-        JPanel leftHeaderGroup = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 15)); // 15px de hgap e vgap
-        leftHeaderGroup.setOpaque(false); // Mantém o fundo branco do pai
+        // Internal panel to group icon and text with spacing
+        JPanel leftHeaderGroup = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 15)); // 15px of hgap and vgap
+        leftHeaderGroup.setOpaque(false); // Keeps the white background of the parent
 
-        // Carregamento do ícone (ajustado para ficar próximo ao texto)
+        // Icon loading (adjusted to be close to the text)
         JLabel iconLabel;
         java.net.URL imgURL = getClass().getResource("/logo.png");
         if (imgURL != null) {
@@ -55,33 +56,33 @@ public class MainFrame extends JFrame {
             iconLabel = new JLabel("[ICO]");
         }
 
-        // Configuração do Título
+        // Title Configuration
         JLabel titleLabel = new JLabel("Batch Processing Utility");
         titleLabel.setFont(new Font("Dialog", Font.BOLD, 18));
 
-        // Adiciona os dois no grupo da esquerda
+        // Adds both to the left group
         leftHeaderGroup.add(iconLabel);
         leftHeaderGroup.add(titleLabel);
 
-        // Adiciona o grupo ao lado oeste do headerPanel
+        // Adds the group to the west side of headerPanel
         headerPanel.add(leftHeaderGroup, BorderLayout.WEST);
 
         return headerPanel;
     }
 
     private JPanel createCenterPanel() {
-        // --- 2. PAINEL CENTRAL ---
+        // --- 2. CENTER PANEL ---
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        // Configurações no topo: Diretório e Data
+        // Top configurations: Directory and Date
         JPanel configPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
         configPanel.add(new JLabel("Output Dir:"));
         txtDir = new JTextField(25);
         configPanel.add(txtDir);
 
-        // Botão de busca de diretório (Browse)
+        // Directory browse button
         JButton btnBrowse = new JButton("...");
         btnBrowse.setToolTipText("Select Output Directory");
         btnBrowse.setPreferredSize(new Dimension(30, 22));
@@ -90,15 +91,15 @@ public class MainFrame extends JFrame {
 
         configPanel.add(new JLabel("  Reference Date (MM/dd/yyyy):"));
         datePicker = new JDateChooser();
-        datePicker.setLocale(Locale.US); // Força o calendário em Inglês
-        datePicker.setDateFormatString("MM/dd/yyyy"); // Formato americano
+        datePicker.setLocale(Locale.US); // Forces the calendar in English
+        datePicker.setDateFormatString("MM/dd/yyyy"); // American format
         datePicker.setDate(new Date());
         datePicker.setPreferredSize(new Dimension(140, 22));
         configPanel.add(datePicker);
 
         centerPanel.add(configPanel, BorderLayout.NORTH);
 
-        // Botões à Esquerda (10 unidades equidistantes)
+        // Left buttons (10 equally spaced units)
         JPanel buttonPanel = new JPanel(new GridLayout(10, 1, 5, 5));
         buttonPanel.setBorder(new EmptyBorder(10, 0, 10, 10));
         for (int i = 1; i <= 10; i++) {
@@ -108,7 +109,7 @@ public class MainFrame extends JFrame {
         }
         centerPanel.add(buttonPanel, BorderLayout.WEST);
 
-        // Console à Direita
+        // Right console
         console = new JTextArea();
         console.setBackground(Color.BLACK);
         console.setForeground(Color.WHITE);
@@ -123,7 +124,7 @@ public class MainFrame extends JFrame {
     }
 
     private JPanel createFooterPanel() {
-        // --- 3. RODAPÉ ---
+        // --- 3. FOOTER ---
         JPanel footerPanel = new JPanel(new BorderLayout());
         footerPanel.setBorder(new EmptyBorder(5, 10, 10, 10));
 
@@ -137,7 +138,7 @@ public class MainFrame extends JFrame {
         return footerPanel;
     }
 
-    // Método para abrir o seletor de pastas gráfico
+    // Method to open the graphical folder selector
     private void selectDirectory() {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -150,82 +151,7 @@ public class MainFrame extends JFrame {
     }
 
     private void runExternalCommand() {
-        console.setText(""); // Limpa o console antes de começar
-        progressBar.setIndeterminate(true);
-        statusLabel.setText("Running process...");
-
-        SwingWorker<Void, String> worker = new SwingWorker<>() {
-            @Override
-            protected Void doInBackground() throws Exception {
-                try {
-                    // Exemplo pegando o valor da data e do dir para o log
-                    String selectedDate = ((JTextField) datePicker.getDateEditor().getUiComponent()).getText();
-                    publish("Target Date: " + selectedDate);
-                    publish("Target Dir: " + txtDir.getText());
-                    publish("------------------------------------------");
-
-                    ProcessBuilder pb = new ProcessBuilder("lsx", "-la",
-                            txtDir.getText().isEmpty() ? "." : txtDir.getText());
-                    pb.redirectErrorStream(true);
-                    Process process = pb.start();
-
-                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            publish(line);
-                        }
-                    }
-                    int exitCode = process.waitFor();
-                    
-                    if (exitCode != 0) {
-                        publish("------------------------------------------");
-                        publish("ERROR: Process exited with code " + exitCode);
-                    }
-                } catch (Exception e) {
-                    publish("------------------------------------------");
-                    publish("ERROR: An exception occurred during execution");
-                    publish("Exception: " + e.getClass().getSimpleName() + ": " + e.getMessage());
-                    publish("------------------------------------------");
-                    publish("Stack Trace:");
-                    
-                    // Print stack trace to console
-                    for (StackTraceElement element : e.getStackTrace()) {
-                        publish("  at " + element.toString());
-                    }
-                    
-                    // Print cause chain if available
-                    Throwable cause = e.getCause();
-                    while (cause != null) {
-                        publish("Caused by: " + cause.getClass().getSimpleName() + ": " + cause.getMessage());
-                        for (StackTraceElement element : cause.getStackTrace()) {
-                            publish("  at " + element.toString());
-                        }
-                        cause = cause.getCause();
-                    }
-                }
-                return null;
-            }
-
-            @Override
-            protected void process(List<String> chunks) {
-                for (String line : chunks) {
-                    console.append(line + "\n");
-                }
-            }
-
-            @Override
-            protected void done() {
-                progressBar.setIndeterminate(false);
-                progressBar.setValue(100);
-                statusLabel.setText("Execution Finished.");
-            }
-        };
-        worker.execute();
-    }
-
-    public static void main(String[] args) {
-        // Garante que o Locale seja US antes de qualquer renderização
-        Locale.setDefault(Locale.US);
-        SwingUtilities.invokeLater(() -> new MainFrame().setVisible(true));
+        String targetDir = txtDir.getText().isEmpty() ? "." : txtDir.getText();
+        commandExecutor.execute("ls", "-la", targetDir);
     }
 }
