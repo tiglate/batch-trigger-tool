@@ -1,0 +1,18 @@
+# Definir comportamento padrão para lidar com quebras de linha
+* text=auto
+
+# Garantir que arquivos Java e XML sempre usem LF (padrão Linux/Unix)
+# Isso evita que o Git acuse mudanças em todas as linhas só por causa do Windows
+*.java text eol=lf
+*.xml text eol=lf
+*.properties text eol=lf
+
+# Marcar arquivos binários (imagens do ícone, etc) para não serem corrompidos
+*.png binary
+*.jpg binary
+*.ico binary
+*.jar binary
+
+# Scripts de execução rápida
+*.sh text eol=lf
+*.bat text eol=crlf
