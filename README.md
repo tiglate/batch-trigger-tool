@@ -1,4 +1,4 @@
-# 🚀 Project: The "Bureaucracy Dodger" (Batch Utility Tool)
+# 🚀 Batch Utility Tool
 
 ### 🧐 O que é isso?
 Sabe aquele momento em que a "segurança corporativa" decide que você não pode mais rodar seus scripts úteis porque eles não têm uma assinatura digital que leva 3 meses e 42 aprovações para sair? Pois é. 
@@ -28,7 +28,7 @@ Este projeto é um protótipo de uma interface Swing clássica (com aquele cheir
    java -jar target/internal-batch-tool-1.0-SNAPSHOT.jar
    ```
 
-### Última dica de "mestre":
+### 🎁 Última dica de "mestre":
 Quando você for criar o atalho no Windows para os usuários, no campo "Destino", use:
 `javaw -jar "C:\Caminho\Para\Seu\Arquivo.jar"`
 
