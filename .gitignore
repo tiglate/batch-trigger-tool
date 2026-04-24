@@ -1,30 +1,65 @@
-# Compiled class file
-*.class
-
-# Log file
+# ==============================================================================
+# MAVEN & BUILD
+# ==============================================================================
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+# Evita subir arquivos de log gerados pelo Maven ou pelo Spring
 *.log
 
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
-
-# Ignora toda a pasta .vscode
-.vscode/
-
-# Mas abre uma exceção especificamente para o arquivo launch.json
+# ==============================================================================
+# VISUAL STUDIO CODE (VSCODE)
+# ==============================================================================
+.vscode/*
+# A regra de ouro que combinamos: ignora tudo, exceto o launch.json
 !.vscode/launch.json
+# Ignora arquivos de workspace e histórico de debug
+*.code-workspace
+.history/
+
+# ==============================================================================
+# INTELLIJ IDEA
+# ==============================================================================
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+# Se você usar o plugin do JRebel ou similares
+rebel.xml
+
+# ==============================================================================
+# ECLIPSE
+# ==============================================================================
+.metadata/
+bin/
+tmp/
+.tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.project
+.classpath
+.factorypath
+
+# ==============================================================================
+# SISTEMA OPERACIONAL (LIXO)
+# ==============================================================================
+# Windows
+Thumbs.db
+Desktop.ini
+# Linux
+.DS_Store
+.fuse_hidden*
+.directory
+.Trash-*
