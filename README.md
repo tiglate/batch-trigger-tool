@@ -25,7 +25,7 @@ Este projeto é um protótipo de uma interface Swing clássica (com aquele cheir
    ```
 3. Execute o JAR maroto:
    ```bash
-   java -jar target/internal-batch-tool-1.0-SNAPSHOT.jar
+   java -jar target/batch-trigger.jar
    ```
 
 ### 🎁 Última dica de "mestre":
