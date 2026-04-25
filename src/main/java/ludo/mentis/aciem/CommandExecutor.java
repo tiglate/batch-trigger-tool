@@ -1,6 +1,7 @@
 package ludo.mentis.aciem;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
@@ -25,6 +26,7 @@ public class CommandExecutor {
     private final JTextArea console;
     private final JProgressBar progressBar;
     private final JLabel statusLabel;
+    private static final String HORIZONTAL_LINE = "------------------------------------------";
 
     /**
      * Constructs a CommandExecutor with the required UI components.
@@ -73,7 +75,10 @@ public class CommandExecutor {
             try {
                 publishExecutionInfo();
                 executeCommand();
-            } catch (Exception e) {
+            } catch (IOException e) {
+                handleException(e);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // Restore interrupted status
                 handleException(e);
             }
             return null;
@@ -86,13 +91,13 @@ public class CommandExecutor {
             String selectedDate = ((JTextField) datePicker.getDateEditor().getUiComponent()).getText();
             publish("Target Date: " + selectedDate);
             publish("Target Dir: " + txtDir.getText());
-            publish("------------------------------------------");
+            publish(HORIZONTAL_LINE);
         }
 
         /**
          * Creates and executes the external process command.
          */
-        private void executeCommand() throws Exception {
+        private void executeCommand() throws IOException, InterruptedException {
             ProcessBuilder pb = new ProcessBuilder(command);
             pb.redirectErrorStream(true);
             Process process = pb.start();
@@ -101,7 +106,7 @@ public class CommandExecutor {
             
             int exitCode = process.waitFor();
             if (exitCode != 0) {
-                publish("------------------------------------------");
+                publish(HORIZONTAL_LINE);
                 publish("ERROR: Process exited with code " + exitCode);
             }
         }
@@ -109,7 +114,7 @@ public class CommandExecutor {
         /**
          * Reads and publishes command output line by line.
          */
-        private void captureCommandOutput(Process process) throws Exception {
+        private void captureCommandOutput(Process process) throws IOException {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -122,10 +127,10 @@ public class CommandExecutor {
          * Handles and formats exception details for console output.
          */
         private void handleException(Exception e) {
-            publish("------------------------------------------");
+            publish(HORIZONTAL_LINE);
             publish("ERROR: An exception occurred during execution");
             publish("Exception: " + e.getClass().getSimpleName() + ": " + e.getMessage());
-            publish("------------------------------------------");
+            publish(HORIZONTAL_LINE);
             publish("Stack Trace:");
             
             publishStackTrace(e.getStackTrace());

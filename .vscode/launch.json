@@ -1,12 +1,15 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "java",
-            "name": "Program",
-            "request": "launch",
-            "mainClass": "ludo.mentis.aciem.Program",
-            "projectName": "batch-trigger-tool"
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Program",
+      "request": "launch",
+      "mainClass": "ludo.mentis.aciem.Program",
+      "projectName": "batch-trigger-tool",
+      "env": {
+        "DISPLAY": ":0"
+      }
+    }
+  ]
 }

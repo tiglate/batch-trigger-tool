@@ -32,14 +32,14 @@ public class MainFrame extends JFrame {
     private JLabel statusLabel;
     private JDateChooser datePicker;
     private JTextField txtDir;
-    private CommandExecutor commandExecutor;
+    private transient CommandExecutor commandExecutor;
 
     public MainFrame() {
         // --- FORCE US LOCALE FOR DATE AND INTERFACE ---
         Locale.setDefault(Locale.US);
 
         setTitle("Batch Processing Utility");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setSize(950, 650);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -134,8 +134,8 @@ public class MainFrame extends JFrame {
         console.setFont(new Font("Monospaced", Font.PLAIN, 12));
 
         JScrollPane scrollPane = new JScrollPane(console);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scrollPane.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         centerPanel.add(scrollPane, BorderLayout.CENTER);
 
         return centerPanel;
