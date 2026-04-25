@@ -32,7 +32,7 @@ public class MainFrame extends JFrame {
     private JLabel statusLabel;
     private JDateChooser datePicker;
     private JTextField txtDir;
-    private transient CommandExecutor commandExecutor;
+    private final transient CommandExecutor commandExecutor;
 
     public MainFrame() {
         // --- FORCE US LOCALE FOR DATE AND INTERFACE ---

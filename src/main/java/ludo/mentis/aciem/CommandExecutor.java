@@ -17,7 +17,7 @@ import com.toedter.calendar.JDateChooser;
  * Handles execution of external commands in a separate thread.
  * Manages process execution, output capture, and error handling.
  * Designed to be used with Swing UI components.
- * 
+ * <p>
  * Allows different commands to be executed using the same executor instance.
  */
 public class CommandExecutor {
@@ -63,7 +63,7 @@ public class CommandExecutor {
     /**
      * Internal SwingWorker implementation for executing commands.
      */
-    private class CommandWorker extends SwingWorker<Void, String> {
+    protected class CommandWorker extends SwingWorker<Void, String> {
         private final String[] command;
 
         public CommandWorker(String[] command) {
@@ -71,7 +71,7 @@ public class CommandExecutor {
         }
 
         @Override
-        protected Void doInBackground() throws Exception {
+        protected Void doInBackground() {
             try {
                 publishExecutionInfo();
                 executeCommand();
@@ -87,17 +87,17 @@ public class CommandExecutor {
         /**
          * Publishes the execution metadata (date and target directory).
          */
-        private void publishExecutionInfo() {
+        protected void publishExecutionInfo() {
             String selectedDate = ((JTextField) datePicker.getDateEditor().getUiComponent()).getText();
-            publish("Target Date: " + selectedDate);
-            publish("Target Dir: " + txtDir.getText());
-            publish(HORIZONTAL_LINE);
+            publishLine("Target Date: " + selectedDate);
+            publishLine("Target Dir: " + txtDir.getText());
+            publishLine(HORIZONTAL_LINE);
         }
 
         /**
          * Creates and executes the external process command.
          */
-        private void executeCommand() throws IOException, InterruptedException {
+        protected void executeCommand() throws IOException, InterruptedException {
             ProcessBuilder pb = new ProcessBuilder(command);
             pb.redirectErrorStream(true);
             Process process = pb.start();
@@ -106,19 +106,19 @@ public class CommandExecutor {
             
             int exitCode = process.waitFor();
             if (exitCode != 0) {
-                publish(HORIZONTAL_LINE);
-                publish("ERROR: Process exited with code " + exitCode);
+                publishLine(HORIZONTAL_LINE);
+                publishLine("ERROR: Process exited with code " + exitCode);
             }
         }
 
         /**
          * Reads and publishes command output line by line.
          */
-        private void captureCommandOutput(Process process) throws IOException {
+        protected void captureCommandOutput(Process process) throws IOException {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    publish(line);
+                    publishLine(line);
                 }
             }
         }
@@ -126,31 +126,38 @@ public class CommandExecutor {
         /**
          * Handles and formats exception details for console output.
          */
-        private void handleException(Exception e) {
-            publish(HORIZONTAL_LINE);
-            publish("ERROR: An exception occurred during execution");
-            publish("Exception: " + e.getClass().getSimpleName() + ": " + e.getMessage());
-            publish(HORIZONTAL_LINE);
-            publish("Stack Trace:");
+        protected void handleException(Exception e) {
+            publishLine(HORIZONTAL_LINE);
+            publishLine("ERROR: An exception occurred during execution");
+            publishLine("Exception: " + e.getClass().getSimpleName() + ": " + e.getMessage());
+            publishLine(HORIZONTAL_LINE);
+            publishLine("Stack Trace:");
             
             publishStackTrace(e.getStackTrace());
             
             // Print cause chain if available
             Throwable cause = e.getCause();
             while (cause != null) {
-                publish("Caused by: " + cause.getClass().getSimpleName() + ": " + cause.getMessage());
+                publishLine("Caused by: " + cause.getClass().getSimpleName() + ": " + cause.getMessage());
                 publishStackTrace(cause.getStackTrace());
                 cause = cause.getCause();
             }
         }
 
         /**
-         * Publishes stack trace elements to console.
+         * Publishes stack trace elements to the console.
          */
-        private void publishStackTrace(StackTraceElement[] stackTrace) {
+        protected void publishStackTrace(StackTraceElement[] stackTrace) {
             for (StackTraceElement element : stackTrace) {
-                publish("  at " + element.toString());
+                publishLine("  at " + element.toString());
             }
+        }
+
+        /**
+         * Publishes a single line to SwingWorker chunks.
+         */
+        protected void publishLine(String line) {
+            publish(line);
         }
 
         @Override
